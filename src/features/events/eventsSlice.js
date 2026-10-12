@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getEvents, getEventById } from '../../services/ticketmaster';
+import { getEvents, getEventById, getClassifications } from '../../services/ticketmaster';
 
 export const fetchEvents = createAsyncThunk(
   'events/fetchEvents',
@@ -29,6 +29,21 @@ export const fetchEventById = createAsyncThunk(
   }
 );
 
+export const fetchCategories = createAsyncThunk(
+  'events/fetchCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getClassifications();
+      const segments =
+        data._embedded?.classifications?.map((c) => c.segment).filter(Boolean) || [];
+      const unique = Array.from(new Map(segments.map((s) => [s.id, s])).values());
+      return unique.map((s) => ({ id: s.id, name: s.name }));
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const eventsSlice = createSlice({
   name: 'events',
   initialState: {
@@ -41,6 +56,7 @@ const eventsSlice = createSlice({
     selected: null,
     selectedLoading: false,
     selectedError: null,
+    categories: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -72,6 +88,9 @@ const eventsSlice = createSlice({
       .addCase(fetchEventById.rejected, (state, action) => {
         state.selectedLoading = false;
         state.selectedError = action.payload || 'Something went wrong';
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categories = action.payload;
       });
   },
 });
