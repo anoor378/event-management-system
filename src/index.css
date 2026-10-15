@@ -251,3 +251,29 @@ code {
 .toast-error {
   background: #c62828;
 }
+
+.my-events {
+  padding: 1rem;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.tab {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+.tab.active {
+  background: #646cff;
+  color: #fff;
+  border-color: #646cff;
+}
+.small {
+  font-size: 0.85rem;
+  color: #777;
+}
