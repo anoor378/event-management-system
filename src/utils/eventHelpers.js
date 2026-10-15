@@ -30,3 +30,16 @@ export const getCategory = (event) => {
     genre: c?.genre?.name,
   };
 };
+
+export const getPriceRange = (event) => {
+  const p = event?.priceRanges?.[0];
+  if (!p) return 'Price not available';
+  return `${p.currency} ${p.min} - ${p.max}`;
+};
+
+export const isUpcoming = (event) => {
+  const start = event?.dates?.start;
+  if (!start?.localDate) return true;
+  const date = new Date(`${start.localDate}T${start.localTime || '23:59:59'}`);
+  return date >= new Date();
+};

@@ -8,8 +8,15 @@ import ErrorMessage from '../components/ErrorMessage';
 import SearchBar from '../components/SearchBar';
 import Filters from '../components/Filters';
 import Pagination from '../components/Pagination';
+import { isUpcoming } from '../utils/eventHelpers';
 
 const emptyFilters = { category: '', city: '', date: '' };
+
+const pad = (n) => String(n).padStart(2, '0');
+const todayString = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
 
 export default function Events() {
   const dispatch = useDispatch();
@@ -29,27 +36,22 @@ export default function Events() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  const buildParams = () => {
-    const start = filters.date
-      ? `${filters.date}T00:00:00Z`
-      : new Date().toISOString().split('.')[0] + 'Z';
+  useEffect(() => {
     const params = {
       keyword: debouncedSearch,
       classificationName: filters.category,
       city: debouncedCity,
-      startDateTime: start,
       page: currentPage,
     };
-    if (filters.date) params.endDateTime = `${filters.date}T23:59:59Z`;
-    return params;
-  };
 
-  const load = () => dispatch(fetchEvents(buildParams()));
+    if (filters.date) {
+      params.localStartDateTime = `${filters.date}T00:00:00,${filters.date}T23:59:59`;
+    } else {
+      params.localStartDateTime = `${todayString()}T00:00:00,*`;
+    }
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, debouncedCity, filters.category, filters.date, currentPage]);
+    dispatch(fetchEvents(params));
+  }, [dispatch, debouncedSearch, debouncedCity, filters.category, filters.date, currentPage]);
 
   const handleSearch = (value) => {
     setSearch(value);
@@ -72,6 +74,8 @@ export default function Events() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const upcomingItems = items.filter(isUpcoming);
+
   return (
     <div>
       <h2>Upcoming Events</h2>
@@ -84,12 +88,16 @@ export default function Events() {
       />
 
       {loading && <Loader text="Loading events..." />}
-      {!loading && error && <ErrorMessage message={error} onRetry={load} />}
-      {!loading && !error && items.length === 0 && <p>No events found. Try different filters.</p>}
-      {!loading && !error && items.length > 0 && (
+      {!loading && error && (
+        <ErrorMessage message={error} onRetry={() => setCurrentPage(0)} />
+      )}
+      {!loading && !error && upcomingItems.length === 0 && (
+        <p>No events found. Try different filters.</p>
+      )}
+      {!loading && !error && upcomingItems.length > 0 && (
         <>
           <div className="events-grid">
-            {items.map((event) => (
+            {upcomingItems.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
