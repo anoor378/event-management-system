@@ -51,7 +51,7 @@ const eventsSlice = createSlice({
     page: 0,
     totalPages: 0,
     totalElements: 0,
-    loading: false,
+    loading: true,
     error: null,
     selected: null,
     selectedLoading: false,
