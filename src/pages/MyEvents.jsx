@@ -53,7 +53,7 @@ export default function MyEvents() {
       </div>
 
       {list.length === 0 ? (
-        <p>
+        <p className="empty">
           {tab === 'upcoming'
             ? 'You have no upcoming registrations.'
             : 'You have no completed events yet.'}{' '}
@@ -77,13 +77,11 @@ export default function MyEvents() {
                   <p className="small">
                     Registered on {new Date(r.registeredAt).toLocaleDateString()}
                   </p>
-                  <Link to={`/events/${r.eventId}`}>View details</Link>
+                  <Link to={`/events/${r.eventId}`} className="btn-link">View details</Link>
                   {tab === 'upcoming' && (
-                    <div>
-                      <button className="btn-danger" onClick={() => handleCancel(r.eventId)}>
-                        Cancel registration
-                      </button>
-                    </div>
+                    <button className="btn-danger" onClick={() => handleCancel(r.eventId)}>
+                      Cancel registration
+                    </button>
                   )}
                 </div>
               </div>
