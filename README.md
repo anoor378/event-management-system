@@ -77,9 +77,6 @@ Users can browse upcoming concerts, sports, theatre and other events, filter the
 | Local Storage | Persisting users, login session and registrations |
 | CSS | Custom responsive styling |
 
-## Screenshots
-
-> Add screenshots in a `screenshots/` folder and link them here, for example:
 
 ```
 ![Events page](screenshots/events.png)
